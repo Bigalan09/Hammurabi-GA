@@ -1,5 +1,5 @@
 {
-  "name": "hammurabi",
+  "name": "hammurabi-ga",
   "version": "0.0.1",
   "main": "main.js",
   "directories": {
@@ -36,6 +36,6 @@
     "test": "mocha --reporter spec --require babel-core/register"
   },
   "author": "",
-  "license": "ISC",
+  "license": "MIT",
   "description": ""
 }
