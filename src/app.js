@@ -3,11 +3,11 @@
 import Game from "./game";
 import GeneticAlgorithm from './genetic';
 
-let populationSize = 250;
+let populationSize = 1;
 let initalPopulation = generatePopulation(populationSize);
 let genetic = new GeneticAlgorithm(mutation, crossover, fitness, competition, initalPopulation, populationSize, 35);
 let generation = 0;
-let maxGenerations = 2500;
+let maxGenerations = 1;
 let best = genetic.best();
 while (generation < maxGenerations) {
     genetic.evolve();
@@ -31,20 +31,15 @@ function mutation(oldPhenotype) {
     return getYears();
 }
 function crossover(phenoTypeA, phenoTypeB) {
-    var splitPoint = randomInt(0, 10);
-    for (var j = splitPoint; j < 10; j++) {
-        var temp = phenoTypeA[j];
-        phenoTypeA[j] = phenoTypeB[j];
-        phenoTypeB[j] = temp;
-    }
     return [phenoTypeB, phenoTypeA];
 }
 function fitness(phenotype) {
     let game = new Game();
-    do {
-        game.go(phenotype[game.state.year - 1].buy, phenotype[game.state.year - 1].feed, phenotype[game.state.year - 1].planted);
-    } while (game.state.year < 10 && game.isAlive);
-    return game.state.year * (((game.state.population % 100) + 1) * (game.state.harvest + game.state.acres_owned + game.state.bushels_in_storage)) / 1000;
+    for (var i = 0; i < phenotype.length; i++) {
+        game.go(phenotype[i].buy, phenotype[i].feed, phenotype[i].planted);
+    }
+    //return ((game.state.year > 9 ? 1 : 0) * (game.state.isAlive ? 1 : 0) * game.state.population);
+    return game.state.year * game.state.population * game.state.bushels_in_storage;
 }
 function competition(phenoTypeA, phenoTypeB) {
     return false;
@@ -61,16 +56,21 @@ function generatePopulation(populationSize) {
 function getYears() {
     let game = new Game();
     var years = [];
-    let limits = game.recalculate_limits(0, 0, 0);
+    var limits = game.recalculate_limits(0, 0, 0);
     for (var j = 0; j < 10; j++) {
         let buy = randomInt(limits.buy.min, limits.buy.max);
         limits = game.recalculate_limits(buy, 0, 0);
+
         let feed = randomInt(limits.feed.min, limits.feed.max);
         limits = game.recalculate_limits(buy, feed, 0);
+
         let planted = randomInt(limits.planted.min, limits.planted.max);
-        years.push({ buy, feed, planted });
-        game.go(buy, feed, planted);
         limits = game.recalculate_limits(buy, feed, planted);
+
+        if (game.state.isAlive) {
+            game.go(buy, feed, planted);
+            years.push({ buy, feed, planted });
+        }
     }
     return years;
 }

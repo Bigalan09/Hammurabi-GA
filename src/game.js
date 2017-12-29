@@ -77,11 +77,11 @@ export default class Game {
         let startOfYearPopulation = this.state.population;
         this.state.year++;
         this.buy_land(buy);
-        this.calculate_plague();
+        //this.calculate_plague();
         this.calculate_starved(feed);
         this.calculate_immigrants();
         this.calculate_harvest(planted);
-        this.calculate_rats();
+        //this.calculate_rats();
         this.calculate_cost_per_acre();
         this.state.isAlive = (
             this.state.year < 10 &&
